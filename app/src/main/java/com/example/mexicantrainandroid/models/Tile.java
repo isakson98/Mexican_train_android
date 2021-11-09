@@ -1,20 +1,13 @@
 package com.example.mexicantrainandroid.models;
 
-import androidx.annotation.Nullable;
+/*
+This class is responsible for creation and updates of tiles.
+Although short, this class is the only one responsible for tiles, and
+it's only responsibility is the tile management, so it adheres to
+single-responsibility principle.
+ */
 
 public class Tile {
-
-    private int right;
-
-    public int getRight() {
-        return right;
-    }
-
-    private int left;
-
-    public int getLeft() {
-        return left;
-    }
 
     /* *********************************************************************
     Function Name: Tile
@@ -83,5 +76,22 @@ public class Tile {
         if (this.left == this.right) {return true;}
         else { return false; }
     }
+
+
+    /*
+    GETTERS AND SETTERS + PRIVATE VARIABLES
+     */
+
+    public int getRight() {
+        return right;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    private int right;
+
+    private int left;
 
 }

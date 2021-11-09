@@ -5,6 +5,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+
+/*
+
+Deck class is responsible for dealing with the initial distribution of tiles
+at the start of each round. It is capable of creating a new deck, taking out
+the engine, distributing tiles to all players, and finally giving the rest of tiles
+as the bone yard.
+ */
+
 public class Deck {
 
 
