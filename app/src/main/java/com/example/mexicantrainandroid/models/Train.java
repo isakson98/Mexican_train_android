@@ -21,11 +21,15 @@ public class Train {
     Return Value: none
     Help received: none
     ********************************************************************* */
-    public Train(String train_name) {
+    public Train(String train_name, Tile starting_tile) {
         this.tile_top_half = Integer.MAX_VALUE;
         this.marker = false;
         this.ends_with_orphan_double = false;
         this.name = train_name;
+        this.add_new_tile(starting_tile);
+        if (train_name.equals("Mexican")) {
+            this.train_tiles.clear();
+        }
     }
 
 
@@ -63,10 +67,7 @@ public class Train {
     Help received: none
      */
     public boolean hand_tile_matches_end(Tile player_tile) {
-        if (this.tile_top_half == player_tile.getRight() || this.tile_top_half == player_tile.getLeft()) {
-            return true;
-        }
-        return false;
+        return this.tile_top_half == player_tile.getRight() || this.tile_top_half == player_tile.getLeft();
     }
 
 
@@ -197,12 +198,12 @@ public class Train {
         this.train_tiles = train_tiles;
     }
 
-    private String name;
+    private final String name;
     private int tile_top_half;
     private boolean marker;
     private boolean ends_with_orphan_double;
     private boolean current_eligible_train;
 
-    List<Tile> train_tiles = new ArrayList<Tile>();
+    List<Tile> train_tiles = new ArrayList<>();
 
 }
