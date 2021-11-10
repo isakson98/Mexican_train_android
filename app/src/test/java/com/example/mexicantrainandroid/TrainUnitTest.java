@@ -1,7 +1,6 @@
 
 package com.example.mexicantrainandroid;
 
-import com.example.mexicantrainandroid.models.Deck;
 import com.example.mexicantrainandroid.models.Tile;
 import com.example.mexicantrainandroid.models.Train;
 
@@ -10,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import java.util.List;
 
 public class TrainUnitTest {
 
