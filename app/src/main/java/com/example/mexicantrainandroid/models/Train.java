@@ -198,6 +198,20 @@ public class Train {
         this.train_tiles = train_tiles;
     }
 
+
+    /* *********************************************************************
+    Function Name: set_whole_new_train
+    Purpose: after loading a perfect, proper train, there's no need to go through
+        the hassle of adding tiles one by one. dangerous function, so must use it
+        with caution
+    Parameters: vector<Tile> loaded_train
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    public String getName() {
+        return name;
+    }
+
     private final String name;
     private int tile_top_half;
     private boolean marker;
