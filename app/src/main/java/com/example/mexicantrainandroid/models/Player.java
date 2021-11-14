@@ -54,26 +54,62 @@ public class Player {
     Return Value: none -> updated made in all_trains, hash map that is used by reference
     Help received: none
     ********************************************************************* */
-    private void deduce_eligible_trains(HashMap<String,Train> all_trains) {
+    public void deduce_eligible_trains(Map<String, Train> all_trains) {
         // reinitialize to have all trains to be ineligible at the start of a player's turn
         for (Train single : all_trains.values()) {
-            single.setCurrent_eligible_train(false);
+            single.setCurrent_eligible_train(true);
         }
 
         boolean orphans_present = false;
-//        /*
-//         * first find orphan double trains, can't play other trains until you get these sorted
-//         */
-//        for (Map.Entry<String, Train> entry : all_trains.entrySet()) {
-//            if (entry.getValue().isEnds_with_orphan_double()) {
-//                orphans_present = true;
-//                all_trains.set
-//            }
-//        }
+        /*
+         * first find orphan double trains, can't play other trains until you get these sorted
+         */
+        for (Train single : all_trains.values()) {
+            if (single.isEnds_with_orphan_double()) {
+                orphans_present = true;
+                single.setCurrent_eligible_train(true);
+            }
+        }
+        // main priority is orphan trains, can't play other trains
+        if (orphans_present)
+            return;
 
+        /*
+         * if no orphan trains, take personal train, mexican train, or opponent's that has a marker
+         */
+
+        all_trains.get("Mexican").setCurrent_eligible_train(true);
+        all_trains.get(this.name).setCurrent_eligible_train(true);
+
+        // adding opponent's trains that have markers
+        // marker simply means that other players can also play
+        for (Train single : all_trains.values()) {
+            // add a train only if it has a marker AND it's not this player's train
+            if (single.isMarker())
+                single.setCurrent_eligible_train(true);
+        }
 
     }
-//    bool draw_from_boneyard(vector<Tile>&, unordered_map<string,Train>&);
+    /* *********************************************************************
+    Function Name: draw_from_boneyard
+    Purpose: draws a tile from the boneyard, adds it to the players hand
+    Parameters:
+        bone_yard -> vector of tiles from the boneyard, passed by reference
+    Return Value:
+        bool -> contributes to whether to add marker to personal train or not
+    Help received: none
+    ********************************************************************* */
+    boolean draw_from_boneyard(List<Tile> bone_yard, Map<String, Train> all_trains) {
+        if (bone_yard.isEmpty()) {
+            all_trains.get(this.name).setMarker(true);
+            this.setPlayer_cant_play(true);
+            return false;
+        }
+        this.hand.add(bone_yard.get(bone_yard.size()-1));
+        bone_yard.remove(bone_yard.size()-1);
+        return true;
+
+    }
 //    bool verify_drawn_tile_playable(unordered_map<string,Train>&);
 //    bool verify_tiles(vector<pair<string, Tile>>, unordered_map<string,Train>&);
 //    void place_tiles(vector<pair<string, Tile>>, unordered_map<string,Train>&);
