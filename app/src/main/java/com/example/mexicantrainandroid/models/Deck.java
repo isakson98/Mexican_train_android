@@ -83,7 +83,7 @@ public class Deck {
             n_tiles = this.entireDeck.size();
         }
 
-        List retrievedTiles = this.entireDeck.subList(0, n_tiles);
+        List retrievedTiles = new ArrayList<> (this.entireDeck.subList(0, n_tiles));
         this.entireDeck = this.entireDeck.subList(n_tiles, this.entireDeck.size());
         return retrievedTiles;
     }

@@ -2,13 +2,28 @@ package com.example.mexicantrainandroid.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+
+/*
+
+This player class is universal: it has functionality that both Human players and
+Computer players might need. It is capable of fully updating and monitoring
+player's decisions -> verifies their legality within the scope of this game's rules,
+and it is also capable of giving advice on what is the best move
+
+ */
 public class Player {
 
-    // not needed in Java
-    // virtual void play(unordered_map<string,Train>&, vector<Tile>&);
+
+    public Player(String name) {
+        this.name = name;
+    }
+
+
     /* *********************************************************************
     Function Name: hand_is_empty
     Purpose: finds out if hand is empty (useful to see if empty hand -> game done)
@@ -99,14 +114,24 @@ public class Player {
         bool -> contributes to whether to add marker to personal train or not
     Help received: none
     ********************************************************************* */
-    boolean draw_from_boneyard(List<Tile> bone_yard, Map<String, Train> all_trains) {
+    public boolean draw_from_boneyard(List<Tile> bone_yard, Map<String, Train> all_trains) {
         if (bone_yard.isEmpty()) {
             all_trains.get(this.name).setMarker(true);
             this.setPlayer_cant_play(true);
             return false;
         }
-        this.hand.add(bone_yard.get(bone_yard.size()-1));
-        bone_yard.remove(bone_yard.size()-1);
+
+        Tile tile_drawn = bone_yard.get(bone_yard.size()-1);
+
+        for (Iterator<Tile> iterator = bone_yard.iterator(); iterator.hasNext();) {
+            Tile iterating_tile = iterator.next();
+            if (tile_drawn == iterating_tile) {
+                iterator.remove();
+                break;
+            }
+        }
+        this.hand.add(tile_drawn);
+
         return true;
 
     }
@@ -161,7 +186,9 @@ public class Player {
     Return Value: true or false
     Help received: none
     ********************************************************************* */
-    protected boolean verify_tiles(List<ComboPair> moves_requested, Map<String, Train> all_trains){
+
+    // TEMP
+    public boolean verify_tiles(List<ComboPair> moves_requested, Map<String, Train> all_trains){
         // exit if any of the trains selected are not eligible
         for (Train single : all_trains.values()) {
             if (! all_trains.get(single.getName()).isCurrent_eligible_train())
@@ -253,19 +280,19 @@ public class Player {
     Return Value: true or false
     Help received: none
     ********************************************************************* */
-    void place_tiles(List<ComboPair> move_one_turn, Map<String, Train> all_trains) {
+    protected void place_tiles(List<ComboPair> move_one_turn, Map<String, Train> all_trains) {
         // deal markers
         // if there's a marker on personal train, and you are placing a tile on your train -> remove the marker
         for (ComboPair cur_pair : move_one_turn){
             if (cur_pair.train_name.equals(this.name))
-                all_trains.get(this.name).setMarker(false);
+                Objects.requireNonNull(all_trains.get(this.name)).setMarker(false);
         }
 
         // removing previous orphan doubles
         // if the tile played by player is goes to train with orphan double, remove the orphan double
         for (ComboPair cur_pair : move_one_turn){
-            if (all_trains.get(cur_pair.train_name).isEnds_with_orphan_double())
-                all_trains.get(cur_pair.train_name).setEnds_with_orphan_double(false);
+            if (Objects.requireNonNull(all_trains.get(cur_pair.train_name)).isEnds_with_orphan_double())
+                Objects.requireNonNull(all_trains.get(cur_pair.train_name)).setEnds_with_orphan_double(false);
         }
 
         // adding new  orphan doubles
@@ -278,11 +305,11 @@ public class Player {
                 boolean create_orphan_double = true;
                 for (int j = i+1; j < move_one_turn.size(); j++) {
                     ComboPair next_pair = move_one_turn.get(i);
-                    if (train_name == next_pair.train_name)
+                    if (train_name.equals(next_pair.train_name))
                         create_orphan_double = false;
                 }
                 if (create_orphan_double)
-                    all_trains.get(train_name).setEnds_with_orphan_double(true);
+                    Objects.requireNonNull(all_trains.get(train_name)).setEnds_with_orphan_double(true);
             }
         }
 
@@ -293,12 +320,120 @@ public class Player {
             // remove tile from your hand
             hand.remove(move_one_turn.get(i).tile);
             // add this new tile to tht train
-            all_trains.get(move_one_turn.get(i).train_name).add_new_tile(move_one_turn.get(i).tile);
+            Objects.requireNonNull(all_trains.get(move_one_turn.get(i).train_name)).add_new_tile(move_one_turn.get(i).tile);
         }
     }
 
+    /* *********************************************************************
+    Function Name: ask_for_help
+    Purpose: returns the most optimal solution given current hand (used by computer as well)
+    Parameters:
+    Return Value:
+        pair<string, vector<pair<string,Tile>>> -> first pair : string message, vector of the turn
+    Algorithm:
+       - first, get eligible tiles -> a tile with a respective train it can be placed it on
+       - have 3 different series of nested loop: each series is fitted for specific number of tiles
+          you have at hand
+       - throughout these loops I'm looking exclusively for combo of tiles with most points. I keep the
+          best and swap it for another combo of tiles if this combo has more points
+    Help received: none
+    ********************************************************************* */
+    List<ComboPair> ask_for_help (Map<String, Train> all_trains){
+        this.deduce_eligible_trains(all_trains);
 
-//    vector<pair<string,Tile>> ask_for_help(unordered_map<string,Train>&);
+        List<ComboPair> mix_elig_tile = new ArrayList<>();
+
+        // get vector of eligible tile with respective trains ->
+        // simply going by if there are any number matches in eligible trains
+        for (Tile hand_tile : this.hand) {
+
+            for (Train train_only : all_trains.values()) {
+                if (!train_only.isCurrent_eligible_train())
+                    continue;
+                if (!train_only.hand_tile_matches_end(hand_tile))
+                    continue;
+                mix_elig_tile.add(new ComboPair(train_only.getName(), new Tile(hand_tile.getLeft(), hand_tile.getRight())));
+            }
+        }
+
+        // if nothing added, there are no more possible moves possible
+        // mix_elig_tile is empty, so it's best to draw a tile
+        if (mix_elig_tile.isEmpty())
+            return mix_elig_tile;
+
+        // at this point we know we have some number matches, but we need to find out
+        // if they are legal based on rules AND which is the best one
+        int max_points = -1;
+        List<ComboPair> best_move = new ArrayList<>();
+        // iterate once to see if there are possible plays
+        for (int i = 0; i < mix_elig_tile.size(); i++) {
+            // turn the first element as a vector of itself and pass to a verification function
+            List<ComboPair> dummy = new ArrayList<>();
+            dummy.add(mix_elig_tile.get(i));
+            if (this.verify_tiles(dummy, all_trains)) {
+                int new_move_score = this.calc_move_score(dummy);
+                if (new_move_score > max_points) {
+                    max_points = new_move_score;
+                    best_move = dummy;
+                }
+            }
+        }
+
+        // iterate once to see if there are possible plays with two tile plays
+        for (int tile_one = 0; tile_one < mix_elig_tile.size(); tile_one++) {
+            // first num is always a double in move of two
+            if (!mix_elig_tile.get(tile_one).tile.is_double()) {continue;}
+            for (int tile_two = 0; tile_two < mix_elig_tile.size(); tile_two++) {
+                // skip duplicating tiles
+                if (tile_one == tile_two) {continue;}
+                // turn the first element as a vector of itself and pass to a verification function
+                List<ComboPair> dummy = new ArrayList<>();
+                dummy.add(mix_elig_tile.get(tile_one));
+                dummy.add(mix_elig_tile.get(tile_two));
+                if (this.verify_tiles(dummy, all_trains)) {
+                    int new_move_score = this.calc_move_score(dummy);
+                    if (new_move_score > max_points) {
+                        max_points = new_move_score;
+                        best_move = dummy;
+                    }
+                }
+            }
+        }
+
+        // iterate once to see if there are possible plays with three tile plays
+        for (int tile_one = 0; tile_one < mix_elig_tile.size(); tile_one++) {
+            // first num is always a double in move of three
+            if (!mix_elig_tile.get(tile_one).tile.is_double()) {continue;}
+
+            for (int tile_two = 0; tile_two < mix_elig_tile.size(); tile_two++) {
+                // second num is always a double in move of three
+                if (!mix_elig_tile.get(tile_two).tile.is_double()) {continue;}
+                // skip duplicating tiles
+                if (tile_one == tile_two) {continue;}
+
+                for (int three = 0; three < mix_elig_tile.size(); three++) {
+                    // skip duplicating tiles
+                    if (tile_one == three || tile_two == three) { continue; }
+
+                    // turn the first element as a vector of itself and pass to a verification function
+                    List<ComboPair> dummy = new ArrayList<>();
+                    dummy.add(mix_elig_tile.get(tile_one));
+                    dummy.add(mix_elig_tile.get(tile_two));
+                    dummy.add(mix_elig_tile.get(three));
+                    if (this.verify_tiles(dummy, all_trains)) {
+                        int new_move_score = this.calc_move_score(dummy);
+                        if (new_move_score > max_points) {
+                            max_points = new_move_score;
+                            best_move = dummy;
+                        }
+                    }
+                }
+            }
+        }
+
+        return best_move;
+
+    }
 
 
     /*
