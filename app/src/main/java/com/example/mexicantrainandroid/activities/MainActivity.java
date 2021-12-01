@@ -2,6 +2,7 @@ package com.example.mexicantrainandroid.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.playNewGameButton:
                 ToastMessage = "New Game starting";
+                Intent saveGameIntent = new Intent(this, RoundActivity.class);
+                startActivity(saveGameIntent);
                 break;
             case R.id.playSavedGameButton:
                 ToastMessage = "Save Game starting";

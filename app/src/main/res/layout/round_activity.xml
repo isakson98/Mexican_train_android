@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/HumanPlayerDecisions"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <Button
         android:id="@+id/saveGameButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="138dp"
+        android:layout_height="45dp"
         android:text="Save Game"
         app:layout_constraintBottom_toTopOf="@+id/makeMoveButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -16,8 +17,8 @@
 
     <Button
         android:id="@+id/makeMoveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="175dp"
+        android:layout_height="37dp"
         android:text="Make move"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/askHelpButton"
@@ -26,8 +27,8 @@
 
     <Button
         android:id="@+id/askHelpButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="155dp"
+        android:layout_height="36dp"
         android:text="Ask for help"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/quitButton"
@@ -36,11 +37,95 @@
 
     <Button
         android:id="@+id/quitButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="79dp"
+        android:layout_height="41dp"
         android:layout_marginBottom="11dp"
         android:text="Quit"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="161dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/quitButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textViewHumanScore"
+            android:layout_width="132dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="116dp"
+            android:text="Score:"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.926"
+            app:layout_constraintStart_toEndOf="@+id/textViewHumanInfo"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCompScore" />
+
+        <TextView
+            android:id="@+id/textViewComputer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="88dp"
+            android:text="Computer"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.111"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewHumanInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="132dp"
+            android:text="Human"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.103"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewComputer" />
+
+        <TextView
+            android:id="@+id/textViewBoneyard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="144dp"
+            android:text="Boneyard"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewHumanInfo" />
+
+        <TextView
+            android:id="@+id/textViewRound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="25dp"
+            android:text="Round"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/textViewComputer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textViewCompScore"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="88dp"
+            android:text="Score:"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.897"
+            app:layout_constraintStart_toEndOf="@+id/textViewComputer"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
