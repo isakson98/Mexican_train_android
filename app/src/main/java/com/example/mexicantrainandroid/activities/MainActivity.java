@@ -1,15 +1,21 @@
 package com.example.mexicantrainandroid.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mexicantrainandroid.R;
+import com.example.mexicantrainandroid.models.Serialization;
 
 
 /*
@@ -24,6 +30,9 @@ import com.example.mexicantrainandroid.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    String m_file_name_text = new String();
+    Serialization ser_obj = new Serialization();
+
     @Override
     // view an button are equivalent
     // with this structure, just one function is needed
@@ -32,11 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.playNewGameButton:
                 ToastMessage = "New Game starting";
-                Intent saveGameIntent = new Intent(this, RoundActivity.class);
-                startActivity(saveGameIntent);
+                Intent newGameIntent = new Intent(this, RoundActivity.class);
+                startActivity(newGameIntent);
                 break;
             case R.id.playSavedGameButton:
                 ToastMessage = "Save Game starting";
+                onSavedButtonClick(v);
                 break;
             case R.id.exitGameButton:
                 ToastMessage="Exiting";
@@ -62,9 +72,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    /*
-    Exiting the game
-     */
+
+    /* *********************************************************************
+    Function Name: onSavedButtonClick
+    Purpose: saves game
+    Parameters:none
+    Return Value: integer
+    Help received: none
+    ********************************************************************* */
+    public void onSavedButtonClick(View saveButton) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Loading saved file");
+        builder.setMessage("Please enter file name to load");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_file_name_text = input.getText().toString();
+                AssetManager assetManager = getAssets();
+                // verify file exists
+                boolean loading_ok = ser_obj.load_data(assetManager, m_file_name_text);
+                if (!loading_ok){
+                    String ToastMessage = "Input is invalid! Try again";
+                    Toast.makeText(MainActivity.this, ToastMessage, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // if it does load all its content into respective data structures
+
+                // start the game
+                Intent saveGameIntent = new Intent(MainActivity.this, RoundActivity.class);
+                startActivity(saveGameIntent);
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+
+    /* *********************************************************************
+    Function Name: onExitButtonClick
+    Purpose: exits game
+    Parameters:none
+    Return Value: integer
+    Help received: none
+    ********************************************************************* */
     public void onExitButtonClick(View exiButton) {
         System.exit(1);
         System.out.println("Exiting");
