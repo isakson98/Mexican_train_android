@@ -9,8 +9,11 @@ This class primarily focuses data translation from text to data structures and v
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.os.Environment;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -21,13 +24,19 @@ import java.util.Map;
 public class Serialization {
 
 
+    /*
+
+    LOADING DATA
+
+     */
+
 
     /* *********************************************************************
     Function Name: load_data
     Purpose: loads data ->
     Parameters:none
     Return Value: boolean
-    Help received: none
+    Help received: https://stackoverflow.com/questions/9544737/read-file-from-assets
     ********************************************************************* */
     public boolean load_data(AssetManager manager, String file_name, Player human, Player computer, Map<String, Train> all_trains) {
 
@@ -81,7 +90,7 @@ public class Serialization {
     Purpose: removes spaces from the string, passed by reference!
     Parameters: const string& number -> used heavily
     Return Value: none (change done in the string passed by reference)
-    Help received: none
+    Help received: https://www.javatpoint.com/how-to-remove-special-characters-from-string-in-java
     ********************************************************************* */
     private String strip_junk(String key_word){
         key_word = key_word.replaceAll("[^a-zA-Z0-9]+", " ");
@@ -146,7 +155,6 @@ public class Serialization {
     }
 
 
-
     /* *********************************************************************
     Function Name: parse_number
     Purpose: converts string version of the number to integer
@@ -155,7 +163,6 @@ public class Serialization {
     Help received: none
     ********************************************************************* */
     private int parse_number(String past_colon_string) {
-
         return Integer.parseInt(past_colon_string);
 
     }
@@ -204,6 +211,121 @@ public class Serialization {
             this.all_trains.get(this.cur_parsed_playing).setMarker(true);
         }
         return past_colon_string;
+    }
+
+
+    /*
+
+    SAVING DATA
+
+     */
+
+
+    /* *********************************************************************
+    Function Name: save_game
+    Purpose: saves the game with existing players', trains', and boneyard's data
+    Parameters: none
+    Return Value: none
+    Help received: cplusplus.com/doc/tutorial/files/
+    ********************************************************************* */
+    public void save_game(AssetManager manager) throws IOException {
+
+        File root = new File(Environment.getExternalStorageDirectory().toString());
+
+        File save_game_file = new File(root, "saved_game.txt");
+
+        FileWriter writer = new FileWriter(save_game_file);
+
+        writer.append(this.concat_start_and_end_line("Round: ", number_to_string(this.round_number)));
+        writer.append("\n");
+
+        writer.append("Computer: \n");
+        writer.append(concat_start_and_end_line("Score: ", number_to_string(this.comp_plr.getScore())));
+        writer.append(concat_start_and_end_line("  Hand: ", tiles_to_string(this.comp_plr.getHand(), true)));
+        String comp_train = this.marker_to_string(tiles_to_string(this.all_trains.get("Computer").getTrain_tiles(), false), "Computer");
+        writer.append(concat_start_and_end_line("  Train: ", comp_train));
+        writer.append( "\n");
+
+        writer.flush();
+        writer.close();
+
+
+    }
+
+
+    /* *********************************************************************
+    Function Name: number_to_string
+    Purpose: concatenates string with a number
+    Parameters:
+        int number -> number that you want to concatenate
+    Return Value: string version of number
+    Help received: none
+    ********************************************************************* */
+    private String number_to_string(int number) {
+        return String.valueOf(number);
+    }
+
+
+    /* *********************************************************************
+    Function Name: concat_start_and_end_line
+    Purpose: concatenates tiles with strings
+    Parameters:
+        string start_str -> starting phrase
+        vector<Tile> bunch_tiles -> vector of tiles
+        bool left_to_right -> which direction the bunch of tiles should be
+    Return Value: string that is a line essentially in a serialization file
+    Help received: none
+    ********************************************************************* */
+    private String tiles_to_string(List<Tile> bunch_tiles, boolean left_to_right) {
+        StringBuilder bunch_tiles_string = new StringBuilder();
+
+        for (Tile cur_tile : bunch_tiles) {
+            String string_tile = this.number_to_string(cur_tile.getLeft()) + "+" +
+                                 this.number_to_string(cur_tile.getRight()) + " ";
+            bunch_tiles_string.append(string_tile);
+        }
+
+        String final_string = bunch_tiles_string.toString();
+        if (!left_to_right) {
+            final_string = new StringBuilder(bunch_tiles_string).reverse().toString();
+        }
+        return final_string;
+
+    }
+
+
+    /* *********************************************************************
+    Function Name: marker_to_string
+    Purpose: converts marker flag to string representation
+    Parameters:
+        string tiles_str -> string of tiles from previous formatting
+        string user_type -> name of user (determines the side M is added to in the string
+    Return Value: string that is a line essentially in a serialization file
+    Help received: none
+    ********************************************************************* */
+    private String marker_to_string(String tiles_str, String user_type) {
+        if (user_type.equals("Computer") && this.all_trains.get(user_type).isMarker()) {
+            tiles_str = "M " + tiles_str;
+        }
+        else if (user_type.equals("Human") && this.all_trains.get(user_type).isMarker()) {
+            tiles_str = tiles_str + " M";
+        }
+        return tiles_str;
+    }
+
+
+    /* *********************************************************************
+    Function Name: concat_start_and_end_line
+    Purpose: concatenates tiles with strings
+    Parameters:
+        string start_str -> starting phrase
+        string game_input -> vector of tiles
+        bool left_to_right -> which direction the bunch of tiles should be
+    Return Value: string that is a line essentially in a serialization file
+    Help received: none
+    ********************************************************************* */
+    private String concat_start_and_end_line(String start_str, String game_input) {
+        return start_str + game_input + "\n";
     }
 
 
