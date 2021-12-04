@@ -15,7 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mexicantrainandroid.R;
+import com.example.mexicantrainandroid.models.Player;
 import com.example.mexicantrainandroid.models.Serialization;
+import com.example.mexicantrainandroid.models.Train;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /*
@@ -32,6 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     String m_file_name_text = new String();
     Serialization ser_obj = new Serialization();
+
+    Player human = new Player("Human");
+    Player computer = new Player("Computer");
+
+    Map<String, Train> all_trains = new HashMap<String, Train>();
 
     @Override
     // view an button are equivalent
@@ -96,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 m_file_name_text = input.getText().toString();
                 AssetManager assetManager = getAssets();
                 // verify file exists
-                boolean loading_ok = ser_obj.load_data(assetManager, m_file_name_text);
+                boolean loading_ok = ser_obj.load_data(assetManager, m_file_name_text, human, computer, all_trains);
                 if (!loading_ok){
                     String ToastMessage = "Input is invalid! Try again";
                     Toast.makeText(MainActivity.this, ToastMessage, Toast.LENGTH_SHORT).show();

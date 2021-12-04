@@ -16,7 +16,7 @@ public class Train {
 
     /* *********************************************************************
     Function Name: Train
-    Purpose: this constructor is used when loading from file
+    Purpose: this constructor is used when starting a new game
     Parameters:
        const string& train_name
     Return Value: none
@@ -31,6 +31,22 @@ public class Train {
         if (train_name.equals("Mexican")) {
             this.train_tiles.clear();
         }
+    }
+
+    /* *********************************************************************
+    Function Name: Train
+    Purpose: this constructor is used when loading from file
+    Parameters:
+       const string& train_name
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    public Train(String train_name) {
+        this.tile_top_half = Integer.MAX_VALUE;
+        this.marker = false;
+        this.ends_with_orphan_double = false;
+        this.name = train_name;
+
     }
 
 
