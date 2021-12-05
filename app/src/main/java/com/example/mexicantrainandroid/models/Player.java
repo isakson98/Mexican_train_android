@@ -1,5 +1,6 @@
 package com.example.mexicantrainandroid.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +17,7 @@ player's decisions -> verifies their legality within the scope of this game's ru
 and it is also capable of giving advice on what is the best move
 
  */
-public class Player {
+public class Player implements Serializable {
 
 
     public Player(String name) {

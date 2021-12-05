@@ -7,7 +7,9 @@ it's only responsibility is the tile management, so it adheres to
 single-responsibility principle.
  */
 
-public class Tile {
+import java.io.Serializable;
+
+public class Tile implements Serializable {
 
     /* *********************************************************************
     Function Name: Tile

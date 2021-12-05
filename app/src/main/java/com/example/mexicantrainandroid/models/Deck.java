@@ -1,5 +1,6 @@
 package com.example.mexicantrainandroid.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ as the bone yard.
 
  */
 
-public class Deck {
+public class Deck implements Serializable {
 
 
     /* *********************************************************************

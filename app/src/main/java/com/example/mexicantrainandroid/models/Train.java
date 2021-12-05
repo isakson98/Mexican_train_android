@@ -1,5 +1,6 @@
 package com.example.mexicantrainandroid.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ Each train can have a unique name and there's a slight distinction in how
 a constructor handles whether a game is loaded or not
  */
 
-public class Train {
+public class Train implements Serializable {
 
 
     /* *********************************************************************
