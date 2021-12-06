@@ -151,7 +151,7 @@ public class Player implements Serializable {
         bool -> true if player_cant_play, false otherwise
     Help received: none
     ********************************************************************* */
-    protected boolean verify_drawn_tile_playable(Map<String, Train> all_trains) {
+    public boolean verify_drawn_tile_playable(Map<String, Train> all_trains) {
 
         Tile drawn_tile = this.hand.get(this.hand.size()-1);
 
@@ -168,7 +168,7 @@ public class Player implements Serializable {
                 return true;
         }
 
-        // at this point we know we can't play on this train
+        // at this point we know this player misses a turn, so his train needs to be marked
         all_trains.get(this.name).setMarker(true);
         return false;
 

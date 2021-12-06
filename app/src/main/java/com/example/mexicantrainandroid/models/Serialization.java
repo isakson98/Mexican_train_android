@@ -38,7 +38,7 @@ public class Serialization {
     Return Value: boolean
     Help received: https://stackoverflow.com/questions/9544737/read-file-from-assets
     ********************************************************************* */
-    public boolean load_data(AssetManager manager, String file_name, Player human, Player computer, Map<String, Train> all_trains) {
+    public boolean load_data(AssetManager manager, String file_name, Player human, Computer computer, Map<String, Train> all_trains) {
 
         this.human_plr = human;
         this.comp_plr = computer;
@@ -228,22 +228,36 @@ public class Serialization {
     Return Value: none
     Help received: cplusplus.com/doc/tutorial/files/
     ********************************************************************* */
-    public void save_game(AssetManager manager) throws IOException {
+    public void save_game(int round_number, Player human, Player computer, Map<String, Train> all_trains, List<Tile> boneyard) throws IOException {
 
+        // TODO not sure whether this is the right path for the asset folder
         File root = new File(Environment.getExternalStorageDirectory().toString());
 
         File save_game_file = new File(root, "saved_game.txt");
 
         FileWriter writer = new FileWriter(save_game_file);
 
-        writer.append(this.concat_start_and_end_line("Round: ", number_to_string(this.round_number)));
+        writer.append(this.concat_start_and_end_line("Round: ", number_to_string(round_number)));
         writer.append("\n");
 
         writer.append("Computer: \n");
-        writer.append(concat_start_and_end_line("Score: ", number_to_string(this.comp_plr.getScore())));
-        writer.append(concat_start_and_end_line("  Hand: ", tiles_to_string(this.comp_plr.getHand(), true)));
+        writer.append(concat_start_and_end_line("Score: ", number_to_string(computer.getScore())));
+        writer.append(concat_start_and_end_line("  Hand: ", tiles_to_string(computer.getHand(), true)));
         String comp_train = this.marker_to_string(tiles_to_string(this.all_trains.get("Computer").getTrain_tiles(), false), "Computer");
         writer.append(concat_start_and_end_line("  Train: ", comp_train));
+        writer.append( "\n");
+
+        writer.append("Human: \n");
+        writer.append(concat_start_and_end_line("Score: ", number_to_string(human.getScore())));
+        writer.append(concat_start_and_end_line("  Hand: ", tiles_to_string(human.getHand(), true)));
+        String human_train = this.marker_to_string(tiles_to_string(this.all_trains.get("Human").getTrain_tiles(), true), "Human");
+        writer.append(concat_start_and_end_line("  Train: ", human_train));
+        writer.append( "\n");
+
+
+        writer.append(concat_start_and_end_line("Mexican Train: ", tiles_to_string(this.all_trains.get("Human").getTrain_tiles(), true)));
+        writer.append( "\n");
+        writer.append(concat_start_and_end_line("Boneyard: ", tiles_to_string(boneyard, false)));
         writer.append( "\n");
 
         writer.flush();
@@ -280,7 +294,7 @@ public class Serialization {
         StringBuilder bunch_tiles_string = new StringBuilder();
 
         for (Tile cur_tile : bunch_tiles) {
-            String string_tile = this.number_to_string(cur_tile.getLeft()) + "+" +
+            String string_tile = this.number_to_string(cur_tile.getLeft()) + "-" +
                                  this.number_to_string(cur_tile.getRight()) + " ";
             bunch_tiles_string.append(string_tile);
         }
@@ -328,17 +342,21 @@ public class Serialization {
         return start_str + game_input + "\n";
     }
 
+    public int getRound_number() {
+        return round_number;
+    }
 
+    public List<Tile> getBoneyard_tiles() {
+        return boneyard_tiles;
+    }
 
     private String cur_parsed_playing;
 
     // data that is shared
     int round_number;
     Player human_plr;
-    Player comp_plr;
-
+    Computer comp_plr;
     Map<String, Train> all_trains = new HashMap<String, Train>();
-
     List<Tile> boneyard_tiles = new ArrayList<Tile>();
 
 

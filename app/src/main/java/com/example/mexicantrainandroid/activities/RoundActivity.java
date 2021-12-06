@@ -2,16 +2,21 @@ package com.example.mexicantrainandroid.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mexicantrainandroid.R;
 import com.example.mexicantrainandroid.models.ComboPair;
+import com.example.mexicantrainandroid.models.Computer;
 import com.example.mexicantrainandroid.models.Deck;
 import com.example.mexicantrainandroid.models.Player;
 import com.example.mexicantrainandroid.models.Serialization;
@@ -44,21 +49,13 @@ public class RoundActivity extends Activity implements View.OnClickListener{
                 break;
 
             case R.id.placeTilesButton:
-
-
                 // human makes a move
                 onMakeMoveButtonClick(v);
-                // update current table?
 
-                // verify if game ended
-
-                // let computer move
-                // update current table?
-
-                // verify if game ended
-
-                // if game ended
-
+                break;
+            case R.id.drawTiles:
+                // human makes a move
+                onDrawTileButtonClick(v);
 
                 break;
             case R.id.askHelpButton:
@@ -90,6 +87,9 @@ public class RoundActivity extends Activity implements View.OnClickListener{
 
         Button move_button = (Button) findViewById(R.id.placeTilesButton);
         move_button.setOnClickListener(this);
+
+        Button draw_button = (Button) findViewById(R.id.drawTiles);
+        draw_button.setOnClickListener(this);
 
         Button help_button =(Button)  findViewById(R.id.askHelpButton);
         help_button.setOnClickListener(this);
@@ -131,32 +131,53 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         boolean game_is_loaded = (boolean) getIntent().getSerializableExtra("Loaded Game");
         round_number = (int) getIntent().getSerializableExtra("Round");
         human = (Player) getIntent().getSerializableExtra("Human");
-        computer = (Player) getIntent().getSerializableExtra("Computer");
-
-        int start_denom = this.determine_starting_denomination();
+        computer = (Computer) getIntent().getSerializableExtra("Computer");
 
         if (game_is_loaded) {
             all_trains.put("Human", (Train) getIntent().getSerializableExtra("Human Train"));
+            if (all_trains.get("Human").getLastTile().is_double())
+                all_trains.get("Human").setEnds_with_orphan_double(true);
             all_trains.put("Computer", (Train) getIntent().getSerializableExtra("Computer Train"));
+            if (all_trains.get("Computer").getLastTile().is_double())
+                all_trains.get("Computer").setEnds_with_orphan_double(true);
             all_trains.put("Mexican", (Train) getIntent().getSerializableExtra("Mexican Train"));
+            if (all_trains.get("Mexican").getLastTile().is_double())
+                all_trains.get("Mexican").setEnds_with_orphan_double(true);
             boneyard = (List<Tile>) getIntent().getSerializableExtra("Boneyard");
         }
         // if not loaded, need to initialize the game
         else {
-            // distribute tiles
-            Deck new_deck = new Deck();
-            human.setHand(new_deck.takeOutBunchTiles(16));
-            computer.setHand(new_deck.takeOutBunchTiles(16));
-            boneyard = new_deck.takeOutBunchTiles(-1);
-
-            //start trains
-            all_trains.put("Human", new Train("Human", new Tile(start_denom, start_denom)));
-            all_trains.put("Computer", new Train("Computer", new Tile(start_denom, start_denom)));
-            all_trains.put("Mexican", new Train("Mexican", new Tile(start_denom, start_denom)));
-
+            start_new_round();
         }
 
     }
+
+    /* *********************************************************************
+    Function Name: init_round_info
+    Purpose: at the start of round, this function distributes tiles to
+            players and sets aside the rest for the boneyard
+    Parameters:
+        Intent intent -> info carried from previous activity with starting values
+    Return Value: none
+    Algorithm: none
+    ********************************************************************* */
+    public void start_new_round() {
+        int start_denom = this.determine_starting_denomination();
+        // distribute tiles
+        Deck new_deck = new Deck();
+        Tile starting_tile = new_deck.takeOutDoubleTiles(start_denom);
+        human.setHand(new_deck.takeOutBunchTiles(16));
+        computer.setHand(new_deck.takeOutBunchTiles(16));
+        boneyard = new_deck.takeOutBunchTiles(-1);
+
+        //start trains
+        all_trains.put("Human", new Train("Human", starting_tile));
+        all_trains.put("Computer", new Train("Computer", starting_tile));
+        all_trains.put("Mexican", new Train("Mexican", starting_tile));
+
+    }
+
+
 
 
     /* *********************************************************************
@@ -186,13 +207,70 @@ public class RoundActivity extends Activity implements View.OnClickListener{
 
         // this will be human making a move ->
 
-        // allow option to skip round
+        // having clicked on the needed tile buttons
 
-        // let computer make a move
+        // this button will show all tiles clicked and all you have to do is confirm it
 
-        // display computer
+
+        this.after_human_move();
 
     }
+
+
+    /* *********************************************************************
+    Function Name: onDrawTileButtonClick
+    Purpose: draw tiles
+    Parameters:
+        View moveButton
+    Return Value: integer
+    Help received: none
+    ********************************************************************* */
+    public void onDrawTileButtonClick(View drawButton) {
+
+        // see if current hand is ok -> TODO lock the ability to draw after doing it once in a turn
+        List<ComboPair> possible_move = human.ask_for_help(all_trains);
+        String Message = "You cannot draw because you can still make a move";
+        // cannot draw because certain moves are available
+        if (drawn_this_turn) {
+            Message = "You already drew this turn!";
+        }
+        else if (possible_move.size() != 0){
+            // show message to draw
+            Message = "You cannot draw because you can still make a move";
+        }
+        // human draws
+        else {
+            // drew something
+            if (this.human.draw_from_boneyard(boneyard, all_trains)) {
+                // drawing was sucessful -> show the
+                Tile drawn_tile = this.human.getHand().get(this.human.getHand().size() - 1);
+                Message = "You drew " +  String.valueOf(drawn_tile.getLeft()) + " - " + String.valueOf(drawn_tile.getLeft()) + "\n";
+                // check if tile is playable
+                if (this.human.verify_drawn_tile_playable(all_trains)) {
+                    Message += "This tile is playable, so please place it on the appropriate train";
+                    drawn_this_turn = true;
+                }
+                else {
+                    Message += "This tile is not playable, so you skip this turn!";
+                    this.after_human_move();
+                }
+                drawn_this_turn = true;
+            }
+            // boneyard is empty
+            else {
+                Message = "Boneyard is empty! Cannot draw";
+                this.human.setPlayer_cant_play(true);
+                this.after_human_move();
+            }
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(Message)
+                .setTitle("Drawing message");
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+    }
+
 
     /* *********************************************************************
     Function Name: onAskHelpButtonClick
@@ -202,6 +280,7 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     Help received: none
     ********************************************************************* */
     public void onAskHelpButtonClick() {
+        // TODO : lock the ability to ask for help after drawing
         List<ComboPair> possible_move = human.ask_for_help(all_trains);
 
         String Message = "None";
@@ -245,6 +324,97 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         System.out.println("Exiting");
     }
 
+    /* *********************************************************************
+    Function Name: after_human_move
+    Purpose: exits game
+    Parameters:
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    public void after_human_move() {
+        // reset certain variables
+        drawn_this_turn = false;
+
+        // verify if game ended after human move
+        if (this.round_ended()) {
+            this.new_round_prompt();
+        }
+        // let computer move
+        computer.play(boneyard, all_trains);
+
+        // update current display
+        this.displayAllTiles();
+
+        // verify if game ended after computer player
+        if (this.round_ended()) {
+            this.new_round_prompt();
+        }
+
+
+    }
+
+    /* *********************************************************************
+    Function Name: round_ended
+    Purpose: end round
+    Parameters:
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    public boolean round_ended() {
+
+        // both skipped a turn
+        if (human.isPlayer_cant_play() && computer.isPlayer_cant_play()) {
+            return true;
+        }
+
+        // someone won
+        if (human.hand_is_empty() || computer.hand_is_empty()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /* *********************************************************************
+    Function Name: new_round_prompt
+    Purpose: ask if you want to play a new round of the same game
+    Parameters:
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    public void new_round_prompt() {
+
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("Play another round");
+
+        // Set up the buttons
+        builder.setPositiveButton("Yes :)", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // verify file exists
+                round_number += 1;
+                start_new_round();
+                displayAllTiles();
+
+            }
+        });
+        builder.setNegativeButton("No :(", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                String ToastMessage = "Thank you for playing!";
+                Toast.makeText(RoundActivity.this, ToastMessage, Toast.LENGTH_SHORT).show();
+                onExitButtonClick();
+            }
+        });
+
+        builder.show();
+
+    }
+
+
+
+
 
     /* *********************************************************************
     Function Name: displayAllTiles
@@ -260,6 +430,7 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         this.displayHorizontalTiles(this.all_trains.get("Computer").getTrain_tiles(), R.id.horizontalCompTrainLayout);
 
         // Human
+        // TODO : make human hand tiles usable -> add feature to select which train to place it on
         this.displayHorizontalTiles(human.getHand(), R.id.horizontalHumanHandLayout);
         this.displayHorizontalTiles(this.all_trains.get("Human").getTrain_tiles(), R.id.horizontalHumanTrainLayout);
 
@@ -302,9 +473,11 @@ public class RoundActivity extends Activity implements View.OnClickListener{
 
     Serialization ser_obj = new Serialization();
     Player human = new Player("Human");
-    Player computer = new Player("Computer");
+    Computer computer = new Computer("Computer");
     int round_number;
     List<Tile> boneyard;
     Map<String, Train> all_trains = new HashMap<String, Train>();
+    // turn variables
+    boolean drawn_this_turn;
 
 }

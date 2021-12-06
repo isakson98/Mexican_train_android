@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mexicantrainandroid.R;
+import com.example.mexicantrainandroid.models.Computer;
 import com.example.mexicantrainandroid.models.Player;
 import com.example.mexicantrainandroid.models.Serialization;
 import com.example.mexicantrainandroid.models.Tile;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Serialization ser_obj = new Serialization();
 
     Player human = new Player("Human");
-    Player computer = new Player("Computer");
+    Computer computer = new Computer("Computer");
 
     Map<String, Train> all_trains = new HashMap<String, Train>();
 

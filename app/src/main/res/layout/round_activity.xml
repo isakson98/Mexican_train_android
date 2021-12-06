@@ -30,11 +30,11 @@
             android:id="@+id/textViewHumanScor"
             android:layout_width="120dp"
             android:layout_height="34dp"
-            android:layout_marginTop="104dp"
+            android:layout_marginTop="100dp"
             android:text="Score:  "
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.847"
+            app:layout_constraintHorizontal_bias="0.789"
             app:layout_constraintStart_toEndOf="@+id/textViewHumanInfo"
             app:layout_constraintTop_toBottomOf="@+id/textViewCompScor" />
 
@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="216dp"
             android:text="Boneyard"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -181,9 +181,10 @@
             android:layout_height="41dp"
             app:layout_constraintBottom_toTopOf="@+id/saveGameButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewBoneyard">
+            app:layout_constraintTop_toBottomOf="@+id/textViewBoneyard"
+            app:layout_constraintVertical_bias="0.229">
 
             <LinearLayout
                 android:id="@+id/horizontalBoneyardLayout"
@@ -198,10 +199,9 @@
             android:layout_height="39dp"
             app:layout_constraintBottom_toTopOf="@+id/textViewBoneyard"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewMexican"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintTop_toBottomOf="@+id/textViewMexican">
 
             <LinearLayout
                 android:id="@+id/horizontalMexicanTrainLayout"
@@ -255,24 +255,13 @@
             app:layout_constraintStart_toEndOf="@+id/saveGameButton" />
 
         <Button
-            android:id="@+id/skipTurnButton"
-            android:layout_width="125dp"
-            android:layout_height="42dp"
-            android:layout_marginTop="4dp"
-            android:text="Skip Turn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.653"
-            app:layout_constraintStart_toEndOf="@+id/quitButton"
-            app:layout_constraintTop_toBottomOf="@+id/drawTiles" />
-
-        <Button
             android:id="@+id/drawTiles"
             android:layout_width="106dp"
-            android:layout_height="41dp"
+            android:layout_height="36dp"
             android:layout_marginTop="4dp"
             android:text="Draw"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.444"
+            app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toEndOf="@+id/askHelpButton"
             app:layout_constraintTop_toBottomOf="@+id/placeTilesButton" />
 

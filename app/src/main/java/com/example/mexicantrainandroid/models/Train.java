@@ -189,6 +189,17 @@ public class Train implements Serializable {
         this.current_eligible_train = current_eligible_train;
     }
 
+    /* *********************************************************************
+    Function Name: getLastTile
+    Purpose: train gets whether it is eligible for current player
+    Parameters: none
+    Return Value: existing boolean
+    Help received: none
+    ********************************************************************* */
+    public Tile getLastTile() {
+        return this.train_tiles.get(this.train_tiles.size()-1);
+    }
+
 
     /* *********************************************************************
     Function Name: getTrain_tiles
