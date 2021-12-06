@@ -339,7 +339,7 @@ public class Player implements Serializable {
           best and swap it for another combo of tiles if this combo has more points
     Help received: none
     ********************************************************************* */
-    List<ComboPair> ask_for_help (Map<String, Train> all_trains){
+    public List<ComboPair> ask_for_help (Map<String, Train> all_trains){
         this.deduce_eligible_trains(all_trains);
 
         List<ComboPair> mix_elig_tile = new ArrayList<>();

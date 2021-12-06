@@ -103,9 +103,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         newGameIntent.putExtra("Computer", computer);
         newGameIntent.putExtra("Loaded Game", false);
         startActivity(newGameIntent);
-
-        round_number += 1;
-
     }
 
 
@@ -114,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Purpose: saves game
     Parameters:none
     Return Value: integer
-    Help received: none
+    Help received: https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
     ********************************************************************* */
     public void onSavedButtonClick(View saveButton) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -148,11 +145,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 saveGameIntent.putExtra("Human Train", all_trains.get("Human"));
                 saveGameIntent.putExtra("Computer Train", all_trains.get("Computer"));
                 saveGameIntent.putExtra("Mexican Train", all_trains.get("Mexican"));
-                saveGameIntent.putExtra("Boneyard",  ser_obj.getBoneyard_tiles());
+                saveGameIntent.putExtra("Boneyard",  (ArrayList) ser_obj.getBoneyard_tiles());
                 saveGameIntent.putExtra("Loaded Game", true);
                 startActivity(saveGameIntent);
 
-                round_number += 1;
 
             }
         });
