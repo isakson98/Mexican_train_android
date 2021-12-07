@@ -73,7 +73,7 @@ public class Player implements Serializable {
     public void deduce_eligible_trains(Map<String, Train> all_trains) {
         // reinitialize to have all trains to be ineligible at the start of a player's turn
         for (Train single : all_trains.values()) {
-            single.setCurrent_eligible_train(true);
+            single.setCurrent_eligible_train(false);
         }
 
         boolean orphans_present = false;
@@ -191,8 +191,8 @@ public class Player implements Serializable {
     // TEMP
     public boolean verify_tiles(List<ComboPair> moves_requested, Map<String, Train> all_trains){
         // exit if any of the trains selected are not eligible
-        for (Train single : all_trains.values()) {
-            if (! all_trains.get(single.getName()).isCurrent_eligible_train())
+        for (ComboPair single_pair : moves_requested) {
+            if (! all_trains.get(single_pair.train_name).isCurrent_eligible_train())
                 return false;
         }
 
@@ -281,7 +281,7 @@ public class Player implements Serializable {
     Return Value: true or false
     Help received: none
     ********************************************************************* */
-    protected void place_tiles(List<ComboPair> move_one_turn, Map<String, Train> all_trains) {
+    public void place_tiles(List<ComboPair> move_one_turn, Map<String, Train> all_trains) {
         // deal markers
         // if there's a marker on personal train, and you are placing a tile on your train -> remove the marker
         for (ComboPair cur_pair : move_one_turn){
@@ -316,10 +316,17 @@ public class Player implements Serializable {
 
         // finally, remove tiles from the hand and add them to the train
         for (int i = 0; i < move_one_turn.size(); i++){
-            // find tile in your hand
-            int index_to_remove = hand.indexOf(move_one_turn.get(i).tile);
-            // remove tile from your hand
-            hand.remove(move_one_turn.get(i).tile);
+//            // find tile in your hand
+//            int index_to_remove = hand.indexOf(move_one_turn.get(i).tile);
+//            // remove tile from your hand
+//            hand.remove(move_one_turn.get(i).tile);
+            for (Iterator<Tile> iterator = hand.iterator(); iterator.hasNext();) {
+                Tile iterating_tile = iterator.next();
+                if (move_one_turn.get(i).tile.equals(iterating_tile)) {
+                    iterator.remove();
+                    break;
+                }
+            }
             // add this new tile to tht train
             Objects.requireNonNull(all_trains.get(move_one_turn.get(i).train_name)).add_new_tile(move_one_turn.get(i).tile);
         }

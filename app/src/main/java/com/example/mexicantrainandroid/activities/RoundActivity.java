@@ -5,11 +5,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,27 +48,36 @@ public class RoundActivity extends Activity implements View.OnClickListener{
                 }
                 // gather all the info and exit
                 onExitButtonClick();
-                break;
+                return;
 
             case R.id.placeTilesButton:
                 // human makes a move
                 onMakeMoveButtonClick(v);
+                return;
 
-                break;
             case R.id.drawTiles:
                 // human makes a move
                 onDrawTileButtonClick(v);
+                return;
 
-                break;
             case R.id.askHelpButton:
                 // show pop to ask for help -> maybe so it doesn't dissapear
                 onAskHelpButtonClick();
-
-                break;
+                return;
 
             case R.id.quitButton:
                 onExitButtonClick();
-                break;
+                return;
+        }
+        // for human tile buttons
+        if (this.human_hand_buttons.contains((Button) v)){
+            try {
+                onHumanTileButtonClick(v);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -170,6 +181,9 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         computer.setHand(new_deck.takeOutBunchTiles(16));
         boneyard = new_deck.takeOutBunchTiles(-1);
 
+        human.setPlayer_cant_play(false);
+        computer.setPlayer_cant_play(false);
+
         //start trains
         all_trains.put("Human", new Train("Human", starting_tile));
         all_trains.put("Computer", new Train("Computer", starting_tile));
@@ -205,14 +219,79 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     ********************************************************************* */
     public void onMakeMoveButtonClick(View moveButton) {
 
-        // this will be human making a move ->
+        List<ComboPair> move_requested = new ArrayList();
 
-        // having clicked on the needed tile buttons
+        // display alert dialog with the tiles and menu choices
+        // for each of them to select which trains they should go to
+        for (Tile tile : human_selected_tiles) {
 
-        // this button will show all tiles clicked and all you have to do is confirm it
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(RoundActivity.this);
+            String[] items = {"Human", "Computer", "Mexican"};
+            int checkedItem = 0;
+            alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {}
+            });
+            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ListView lw = ((AlertDialog)dialog).getListView();
+                    Object checkedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
+                    ComboPair new_pair = new ComboPair(checkedItem.toString(), tile);
+                    move_requested.add(new_pair);
+
+                    // last choice of items
+                    if (move_requested.size() == human_selected_tiles.size()) {
+
+                        relocate_non_double_to_end(move_requested);
+
+                        human.deduce_eligible_trains(all_trains);
+                        // verify the eligibility of the choice
+                        boolean move_acceptable = human.verify_tiles(move_requested, all_trains);
+
+                        // place tiles if the move is valid
+                        if (move_acceptable){
+                            human.place_tiles(move_requested, all_trains);
+                            after_human_move();
+                            human_selected_tiles.clear();
+                        }
+                        else {
+                            String ToastMessage = "Invalid tiles or trains! Try Again";
+                            Toast.makeText(RoundActivity.this, ToastMessage, Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }
+            });
+            AlertDialog alert = alertDialog.create();
+            alert.setTitle("Choose a train for " + tile.getLeft() + " - " + tile.getRight());
+            alert.setCanceledOnTouchOutside(false);
+            alert.show();
+        }
 
 
-        this.after_human_move();
+    }
+
+    /* *********************************************************************
+    Function Name: onDrawTileButtonClick
+    Purpose: relocating so that the order would match the preferred standard
+    Parameters:
+        View moveButton
+    Return Value: integer
+    Help received: none
+    ********************************************************************* */
+    private void relocate_non_double_to_end(List <ComboPair> move_requested) {
+
+        if (move_requested.size() == 1)
+            return;
+
+        for (int i = 0; i < move_requested.size()-1; i++) {
+            if (!move_requested.get(i).tile.is_double()) {
+                ComboPair temp = move_requested.get(i);
+                move_requested.set(i, move_requested.get(move_requested.size()-1));
+                move_requested.set(move_requested.size()-1, temp);
+            }
+        }
 
     }
 
@@ -249,12 +328,12 @@ public class RoundActivity extends Activity implements View.OnClickListener{
                 if (this.human.verify_drawn_tile_playable(all_trains)) {
                     Message += "This tile is playable, so please place it on the appropriate train";
                     drawn_this_turn = true;
+                    this.displayAllTiles();
                 }
                 else {
                     Message += "This tile is not playable, so you skip this turn!";
                     this.after_human_move();
                 }
-                drawn_this_turn = true;
             }
             // boneyard is empty
             else {
@@ -325,6 +404,63 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     }
 
     /* *********************************************************************
+    Function Name: onHumanTileButtonClick
+    Purpose: human tile response -> selecting and selecting tiles for the current move
+    Parameters:
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    public void onHumanTileButtonClick(View v) throws NoSuchFieldException, IllegalAccessException {
+
+        Tile tile_in_action = this.parse_tile(v);
+        // marking tile as playable
+        if (v.getTag() == "regular") {
+            v.getBackground().setColorFilter( Color.GREEN, PorterDuff.Mode.SRC_ATOP);
+            v.setTag("not");
+            this.human_selected_tiles.add(tile_in_action);
+        }
+        else {
+            v.getBackground().setColorFilter( Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+            v.setTag("regular");
+            // remove the button from the list of selected tiles for the move
+            for (int i = 0; i <= this.human_selected_tiles.size(); i++) {
+                if (this.human_selected_tiles.get(i).equals(tile_in_action)) {
+                    this.human_selected_tiles.remove(i);
+                    break;
+                }
+            }
+        }
+
+//        // get the order right -> make sure a double is never the last one
+//        if (this.human_selected_tiles.size() == 3) {
+//            if (this.human_selected_tiles.get(2).is_double()) {
+//                Tile temp = this.human_selected_tiles.get(2);
+//                this.human_selected_tiles.set(2, this.human_selected_tiles.get(1));
+//                this.human_selected_tiles.set(1, temp);
+//            }
+//        }
+//        else if (this.human_selected_tiles.size() == 2) {
+//            if (this.human_selected_tiles.get(1).is_double()) {
+//                Tile temp = this.human_selected_tiles.get(1);
+//                this.human_selected_tiles.set(1, this.human_selected_tiles.get(0));
+//                this.human_selected_tiles.set(0, temp);
+//            }
+//        }
+
+    }
+
+
+    private Tile parse_tile(View v) {
+        Button b = (Button) v;
+        String buttonTiles = b.getText().toString();
+
+        int one_side = Integer.parseInt((buttonTiles.substring(0,1)));
+        int other_side = Integer.parseInt((buttonTiles.substring(4,5)));
+        return new Tile(one_side, other_side);
+
+    }
+
+    /* *********************************************************************
     Function Name: after_human_move
     Purpose: exits game
     Parameters:
@@ -340,7 +476,33 @@ public class RoundActivity extends Activity implements View.OnClickListener{
             this.new_round_prompt();
         }
         // let computer move
-        computer.play(boneyard, all_trains);
+        List<ComboPair> computer_combo = computer.play(boneyard, all_trains);
+        String Message = "None";
+        StringBuilder advice_composition = new StringBuilder();
+        if (computer_combo.size() == 0){
+            // show message to draw
+            advice_composition.append("Computer had to draw");
+        }
+        else {
+            // show message of which tiles to draw
+            advice_composition.append("To maximize point reduction, computer played: \n");
+            int count = 1;
+            for (ComboPair pair: computer_combo) {
+                String string_tile = String.valueOf(pair.tile.getLeft()) + "-" + String.valueOf(pair.tile.getRight());
+                String single_placement = String.valueOf(count) + ". " + pair.train_name + " " + string_tile + "\n";
+                advice_composition.append(single_placement);
+                count += 1;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(advice_composition.toString())
+                .setTitle("Advice message");
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.getWindow().setLayout(600, 600);
+        alertDialog.show();
+
 
         // update current display
         this.displayAllTiles();
@@ -453,6 +615,7 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     public void displayHorizontalTiles(List<Tile> tiles_displaying, int layoutIdNumber) {
         // show user comp hand
         LinearLayout a = (LinearLayout) findViewById(layoutIdNumber);
+        a.removeAllViews();
         //added an ArrayList to store the Buttons if you want to use it later.
         ArrayList<Button> listOfButtons = new ArrayList<Button>();
 
@@ -463,9 +626,16 @@ public class RoundActivity extends Activity implements View.OnClickListener{
             String tile_str = comp_hand_tile.getLeft() + " - " + comp_hand_tile.getRight();
             other_button.setText(tile_str);
             other_button.setId(View.generateViewId());
+            other_button.setOnClickListener(this);
+            other_button.setTag("regular");
+            other_button.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
             listOfButtons.add(other_button);
             a.addView(other_button,layoutParams);
             count++;
+        }
+
+        if (layoutIdNumber == R.id.horizontalHumanHandLayout) {
+            this.human_hand_buttons = listOfButtons;
         }
     }
 
@@ -477,7 +647,10 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     int round_number;
     List<Tile> boneyard;
     Map<String, Train> all_trains = new HashMap<String, Train>();
+
     // turn variables
     boolean drawn_this_turn;
+    List<Button> human_hand_buttons = new ArrayList<>();
+    List<Tile> human_selected_tiles = new ArrayList<>();
 
 }
