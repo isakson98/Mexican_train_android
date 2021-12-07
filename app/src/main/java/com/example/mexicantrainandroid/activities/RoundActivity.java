@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -108,21 +107,8 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         Button quit_button = (Button) findViewById(R.id.quitButton);
         quit_button.setOnClickListener(this);
 
-        // display round
-        TextView roundTextView = (TextView) findViewById(R.id.textViewRound);
-        String full_round_text = roundTextView.getText() + String.valueOf(this.round_number);
-        roundTextView.setText(full_round_text);
-        // set computer score
-        TextView compScoreTextView = (TextView) findViewById(R.id.textViewCompScor);
-        String full_comp_score_text = compScoreTextView.getText() + String.valueOf(this.computer.getScore());
-        compScoreTextView.setText(full_comp_score_text);
-        // set human score
-        TextView humanScoreTextView = (TextView) findViewById(R.id.textViewHumanScor);
-        String full_human_score_text = humanScoreTextView.getText() + String.valueOf(this.human.getScore());
-        humanScoreTextView.setText(full_human_score_text);
-
-
         displayAllTiles();
+        display_round_scores();
 
 
     }
@@ -161,6 +147,7 @@ public class RoundActivity extends Activity implements View.OnClickListener{
             start_new_round();
         }
 
+
     }
 
     /* *********************************************************************
@@ -173,6 +160,9 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     Algorithm: none
     ********************************************************************* */
     public void start_new_round() {
+
+        display_round_scores();
+
         int start_denom = this.determine_starting_denomination();
         // distribute tiles
         Deck new_deck = new Deck();
@@ -189,6 +179,31 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         all_trains.put("Computer", new Train("Computer", starting_tile));
         all_trains.put("Mexican", new Train("Mexican", starting_tile));
 
+    }
+
+
+    /* *********************************************************************
+    Function Name: display_round_scores
+    Purpose: determines the starting tile of the game based on round number
+    Return Value: unsigned int starting_double
+    Algorithm: number of starting double follows a nice pattern being
+        10 - one's digit of the number.
+    Help received: none
+    ********************************************************************* */
+    private void display_round_scores(){
+        // display round
+        TextView roundTextView = (TextView) findViewById(R.id.textViewRound);
+        String full_round_text = "Round: " + String.valueOf(this.round_number);
+        roundTextView.clearComposingText();
+        roundTextView.setText(full_round_text);
+        // set computer score
+        TextView compScoreTextView = (TextView) findViewById(R.id.textViewCompScor);
+        String full_comp_score_text = "Score: " + String.valueOf(this.computer.getScore());
+        compScoreTextView.setText(full_comp_score_text);
+        // set human score
+        TextView humanScoreTextView = (TextView) findViewById(R.id.textViewHumanScor);
+        String full_human_score_text = "Score: "  + String.valueOf(this.human.getScore());
+        humanScoreTextView.setText(full_human_score_text);
     }
 
 
@@ -323,7 +338,7 @@ public class RoundActivity extends Activity implements View.OnClickListener{
             if (this.human.draw_from_boneyard(boneyard, all_trains)) {
                 // drawing was sucessful -> show the
                 Tile drawn_tile = this.human.getHand().get(this.human.getHand().size() - 1);
-                Message = "You drew " +  String.valueOf(drawn_tile.getLeft()) + " - " + String.valueOf(drawn_tile.getLeft()) + "\n";
+                Message = "You drew " +  String.valueOf(drawn_tile.getLeft()) + " - " + String.valueOf(drawn_tile.getRight()) + "\n";
                 // check if tile is playable
                 if (this.human.verify_drawn_tile_playable(all_trains)) {
                     Message += "This tile is playable, so please place it on the appropriate train";
@@ -547,10 +562,12 @@ public class RoundActivity extends Activity implements View.OnClickListener{
     public void new_round_prompt() {
 
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
-        builder.setTitle("Play another round");
+        builder.setTitle("Play another round?");
+
+        sum_up_points();
 
         // Set up the buttons
-        builder.setPositiveButton("Yes :)", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // verify file exists
@@ -560,7 +577,7 @@ public class RoundActivity extends Activity implements View.OnClickListener{
 
             }
         });
-        builder.setNegativeButton("No :(", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -571,6 +588,33 @@ public class RoundActivity extends Activity implements View.OnClickListener{
         });
 
         builder.show();
+
+    }
+
+
+    /* *********************************************************************
+    Function Name: sum_up_points
+    Purpose: ask if you want to play a new round of the same game
+    Parameters:
+    Return Value: none
+    Help received: none
+    ********************************************************************* */
+    private void sum_up_points() {
+
+        int human_sum = 0;
+        for (Tile cur_tile : human.getHand()) {
+            human_sum += cur_tile.getLeft() + cur_tile.getRight();
+        }
+
+        human.setScore(human.getScore() + human_sum);
+
+        int comp_sum = 0;
+        for (Tile cur_tile : computer.getHand()) {
+            comp_sum += cur_tile.getLeft() + cur_tile.getRight();
+        }
+
+        computer.setScore(computer.getScore() + comp_sum);
+
 
     }
 
@@ -634,8 +678,15 @@ public class RoundActivity extends Activity implements View.OnClickListener{
             count++;
         }
 
+
         if (layoutIdNumber == R.id.horizontalHumanHandLayout) {
             this.human_hand_buttons = listOfButtons;
+        }
+        if (layoutIdNumber == R.id.horizontalHumanTrainLayout && this.all_trains.get("Human").isMarker()) {
+            listOfButtons.get(listOfButtons.size()-1).getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+        }
+        if (layoutIdNumber == R.id.horizontalCompTrainLayout && this.all_trains.get("Computer").isMarker()) {
+            listOfButtons.get(listOfButtons.size()-1).getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
         }
     }
 

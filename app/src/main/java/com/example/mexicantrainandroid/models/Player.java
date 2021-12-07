@@ -305,7 +305,7 @@ public class Player implements Serializable {
             if (tile_to_place.is_double()){
                 boolean create_orphan_double = true;
                 for (int j = i+1; j < move_one_turn.size(); j++) {
-                    ComboPair next_pair = move_one_turn.get(i);
+                    ComboPair next_pair = move_one_turn.get(j);
                     if (train_name.equals(next_pair.train_name))
                         create_orphan_double = false;
                 }
