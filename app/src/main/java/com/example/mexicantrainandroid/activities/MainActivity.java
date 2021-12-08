@@ -27,15 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/*
-* interface -> must have the methods specified by everyone using it
-*
-* abstract -> cannot have multiple inhertiance (several abstract class)
-*          -> cannot have
-*
-* https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html
-*
-* */
+/**
+ *
+ * The starting activity of the app
+ *
+ * It allows to start new game, load a game, or exit
+ *
+ */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,8 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int round_number = 1;
 
     @Override
-    // view an button are equivalent
-    // with this structure, just one function is needed
+    /**
+     * function that deals with all button responses
+     * @param v
+     */
     public void onClick(View v) {
         String ToastMessage = "None";
         switch (v.getId()) {
@@ -72,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    /**
+     * initializes button listeners as the activity is starting
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -88,14 +92,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
-    /* *********************************************************************
-    Function Name: onSavedButtonClick
-    Purpose: saves game
-    Parameters:none
-    Return Value: integer
-    Help received: none
-    ********************************************************************* */
+    /**
+     * new button adds round, human, computer, and a marker whether a game passed
+     * is a game or not
+     */
     public void onNewGameButtonClick() {
 
         Intent newGameIntent = new Intent(this, RoundActivity.class);
@@ -107,13 +107,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    /* *********************************************************************
-    Function Name: onSavedButtonClick
-    Purpose: saves game
-    Parameters:none
-    Return Value: integer
-    Help received: https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
-    ********************************************************************* */
+    /**
+     * saved button prompts a file to load, adds additional details to intent, and starts the round activity
+     * Help received: https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
+     * @param saveButton
+     */
     public void onSavedButtonClick(View saveButton) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Loading saved file");
@@ -164,13 +162,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    /* *********************************************************************
-    Function Name: onExitButtonClick
-    Purpose: exits game
-    Parameters:none
-    Return Value: integer
-    Help received: none
-    ********************************************************************* */
+    /**
+     * exiting the game
+     * @param exiButton
+     */
     public void onExitButtonClick(View exiButton) {
         System.exit(1);
         System.out.println("Exiting");

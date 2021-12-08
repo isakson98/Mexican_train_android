@@ -67,10 +67,10 @@ public class Train implements Serializable {
         // setting the other end of incoming tile as new top half tile
         else if (this.tile_top_half == new_tile.getRight()) {
             this.tile_top_half = new_tile.getLeft();
+            new_tile.rotate_tile();
         }
         else if (this.tile_top_half == new_tile.getLeft()) {
             this.tile_top_half = new_tile.getRight();
-            new_tile.rotate_tile();
         }
         // finally, push that new tile into the train stack
         this.train_tiles.add(new_tile);

@@ -7,52 +7,42 @@ import java.util.List;
 import java.util.Random;
 
 
-/*
-
-Deck class is responsible for dealing with the initial distribution of tiles
-at the start of each round. It is capable of creating a new deck, taking out
-the engine, distributing tiles to all players, and finally giving the rest of tiles
-as the bone yard.
-
+/**
+ * Deck class is responsible for dealing with the initial distribution of tiles
+ * at the start of each round. It is capable of creating a new deck, taking out
+ * the engine, distributing tiles to all players, and finally giving the rest of tiles
+ * as the bone yard.
+ *
  */
 
 public class Deck implements Serializable {
 
+    private final int double_n_set_size = 9;
+    private List<Tile> entireDeck = new ArrayList<Tile>();
 
-    /* *********************************************************************
-    Function Name: Deck constructor
-    Purpose: upon creating a Deck object, it creates a vector and shuffle it
-    Parameters: none
-    Return Value: none
-    Help received: none
-    ********************************************************************* */
+    /**
+     * upon creating a Deck object, it creates a vector and shuffle it
+     */
     public Deck() {
         this.populateDeck();
         this.shuffleDeck();
     }
 
 
-    /* *********************************************************************
-    Function Name: shuffleDeck
-    Purpose: shuffling array list of tiles to randomize result in the distribution
-    Parameters: none
-    Return Value: none
-    Help received: none
-    ********************************************************************* */
+    /**
+     * shuffling array list of tiles to randomize result in the distribution
+     */
     public void shuffleDeck(){
         Random rand = new Random(System.currentTimeMillis());
         Collections.shuffle(this.entireDeck, rand);
     }
 
 
-    /* *********************************************************************
-    Function Name: takeOutDoubleTiles
-    Purpose: find the start engine tile and pops it
-    Parameters:
-        doubleDenom -> a double tile number
-    Return Value: Tile
-    Help received: none
-    ********************************************************************* */
+    /**
+     * find the start engine tile and pops it
+     * @param doubleDenom -> calculated by based on round we are in at the time
+     * @return double_tile -> tile taken out
+     */
     public Tile takeOutDoubleTiles(int doubleDenom) {
         Tile double_tile = new Tile(doubleDenom, doubleDenom);
 
@@ -65,17 +55,11 @@ public class Deck implements Serializable {
         return double_tile;
     }
 
-
-    /* *********************************************************************
-    Function Name: takeOutBunchTiles
-    Purpose: extract tiles
-    Parameters:
-        n_tiles -> specified number of tiles for each player
-                           if value is -1, extract everything
-    Return Value:
-        player_hand -> vector of tiles for a player to start game with
-    Help received: none
-    ********************************************************************* */
+    /**
+     * extract several tiles -> useful when distributing tiles at the start of the round
+     * @param n_tiles -> either positive  number, or negative (take out all of them)
+     * @return retrievedTiles -> list of random tiles take out
+     */
     public List<Tile> takeOutBunchTiles(int n_tiles) {
         // verify there's no funny business with empty deck going on
         if (this.entireDeck.size() == 0) {System.exit(0);}
@@ -91,13 +75,9 @@ public class Deck implements Serializable {
     }
 
 
-    /* *********************************************************************
-    Function Name: populateDeck
-    Purpose: initializing a vector of tiles to match the full deck
-    Parameters: none
-    Return Value: none
-    Help received: none
-    ********************************************************************* */
+    /**
+     * initializing a vector of tiles to match the full deck
+     */
     private void populateDeck() {
         for (int first_num = 0; first_num <= this.double_n_set_size; first_num++) {
             for (int second_num = first_num; second_num <= this.double_n_set_size; second_num++) {
@@ -105,8 +85,5 @@ public class Deck implements Serializable {
             }
         }
     }
-
-    private final int double_n_set_size = 9;
-    private List<Tile> entireDeck = new ArrayList<Tile>();
 
 }

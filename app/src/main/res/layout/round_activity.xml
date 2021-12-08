@@ -6,6 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/main_activity" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,7 +29,9 @@
             android:layout_marginStart="36dp"
             android:layout_marginTop="124dp"
             android:text="Mexican Train"
+            android:textColor="@color/white"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHumanInfo" />
 
@@ -30,9 +39,11 @@
             android:id="@+id/textViewHumanScor"
             android:layout_width="120dp"
             android:layout_height="34dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="108dp"
             android:text="Score:  "
+            android:textColor="@color/black"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.789"
             app:layout_constraintStart_toEndOf="@+id/textViewHumanInfo"
@@ -44,7 +55,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
             android:text="Computer"
+            android:textColor="@color/black"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.111"
             app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +69,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="112dp"
             android:text="Human"
+            android:textColor="@color/black"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.104"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,10 +81,12 @@
             android:id="@+id/textViewBoneyard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="216dp"
-            android:text="Boneyard"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="212dp"
+            android:text="Boneyard Top Tile"
+            android:textColor="@color/white"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHumanInfo" />
 
@@ -81,7 +98,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="25dp"
             android:text="Round:  "
+            android:textColor="@color/black"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textViewComputer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -93,7 +112,9 @@
             android:layout_height="31dp"
             android:layout_marginTop="60dp"
             android:text="Score:  "
+            android:textColor="@color/black"
             android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.812"
             app:layout_constraintStart_toEndOf="@+id/textViewComputer"
@@ -216,7 +237,9 @@
             android:layout_height="37dp"
             android:layout_marginStart="36dp"
             android:layout_marginBottom="4dp"
+            android:backgroundTint="@color/purple_700"
             android:text="Save Game"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@+id/askHelpButton"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -226,8 +249,10 @@
             android:layout_height="36dp"
             android:layout_marginStart="24dp"
             android:layout_marginBottom="44dp"
+            android:backgroundTint="@color/purple_700"
             android:text="Ask for help"
             android:textAlignment="center"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -237,8 +262,10 @@
             android:layout_height="36dp"
             android:layout_marginStart="60dp"
             android:layout_marginTop="8dp"
+            android:backgroundTint="@color/purple_700"
             android:text="Quit"
             android:textAlignment="center"
+            android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/askHelpButton" />
 
@@ -247,8 +274,10 @@
             android:layout_width="169dp"
             android:layout_height="35dp"
             android:layout_marginBottom="84dp"
+            android:backgroundTint="@color/purple_700"
             android:text="Place Tiles"
             android:textAlignment="center"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.637"
@@ -259,7 +288,9 @@
             android:layout_width="106dp"
             android:layout_height="36dp"
             android:layout_marginTop="4dp"
+            android:backgroundTint="@color/purple_700"
             android:text="Draw"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toEndOf="@+id/askHelpButton"

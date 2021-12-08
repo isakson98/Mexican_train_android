@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * Computer extends the capabilities of a Player class, but it is more streamlined
+ * to just do the most optimal step in each turn (either play highest tiles or draw)
+ *
+ */
 public class Computer extends Player{
 
 
@@ -11,14 +17,13 @@ public class Computer extends Player{
         super(name);
     }
 
-    /* *********************************************************************
-    Function Name: play
-    Purpose: allows the computer player to play
-    Parameters:
-        all_trains -> holds all trains, fully updated
-    Return Value: true or false
-     Help received: none
-    ********************************************************************* */
+    /**
+     * most important function of computer class -> activated each turn once to conduct all the necessary
+     * steps to play.
+     * @param boneyard
+     * @param all_trains
+     * @return possible_move -> either empty (if skipping a turn) or some tiles -> if it played any
+     */
     public List<ComboPair> play(List<Tile> boneyard, Map<String, Train> all_trains ) {
 
         // by default mark this player as not having played this turn
@@ -48,14 +53,10 @@ public class Computer extends Player{
     }
 
 
-    /* *********************************************************************
-    Function Name: computer_plays_drawn_tile
-    Purpose: allows the computer player to play
-    Parameters:
-        all_trains -> holds all trains, fully updated
-    Return Value: none
-     Help received: none
-    ********************************************************************* */
+    /**
+     * computer plays drawn tile by matching it to an eligible train
+     * @param all_trains
+     */
     private void computer_plays_drawn_tile(Map<String, Train>  all_trains) {
 
         Tile drawn_tile = this.hand.get(this.hand.size()-1);

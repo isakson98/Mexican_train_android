@@ -1,0 +1,16 @@
+Round: 2
+
+Computer:
+   Score: 0
+   Hand: 2-7
+   Train: 1-0 0-5 5-9 9-2 2-6 6-6 6-0 0-2 2-5 5-1 1-1 1-2 2-8 8-8
+Human:
+   Score: 13
+   Hand: 4-4 1-9
+   Train: 8-8 8-5 5-5 5-3 3-6 6-8 8-9 9-4
+
+Mexican Train: 8-0 0-9
+
+Boneyard: 3-7 5-6
+
+Next Player: Human
